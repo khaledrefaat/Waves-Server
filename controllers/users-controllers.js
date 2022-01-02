@@ -2,11 +2,21 @@ const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
-exports.login = (req, res, next) => {
-  {
-    console.log(req.body);
-    next();
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  let user;
+  try {
+    user = await User.findOne({ email });
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError('Signup failed, please try again later', 500));
   }
+
+  if (!user || user.password !== password)
+    return next(new HttpError('Incorrect username or password', 401));
+
+  res.json({ user, message: 'Logged In ^_^' });
 };
 
 exports.signup = async (req, res, next) => {
@@ -25,7 +35,7 @@ exports.signup = async (req, res, next) => {
   try {
     exsistingUser = await User.findOne({ email });
   } catch (err) {
-    console.log(error);
+    console.log(err);
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
@@ -39,7 +49,7 @@ exports.signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    console.log(error);
+    console.log(err);
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
