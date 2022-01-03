@@ -1,25 +1,19 @@
 const { Schema, model, Types } = require('mongoose');
 
-const userSchema = new Schema({
-  username: {
+const playlistSchema = new Schema({
+  playlistName: {
     type: String,
     required: true,
   },
-  email: {
+  playlistCover: {
     type: String,
     required: true,
   },
-  password: {
-    type: String,
+  creator: {
+    type: Types.ObjectId,
     required: true,
+    ref: 'User',
   },
-  playlists: [
-    {
-      type: Types.ObjectId,
-      required: true,
-      ref: 'Playlist',
-    },
-  ],
   songs: [
     {
       type: Types.ObjectId,
@@ -29,4 +23,4 @@ const userSchema = new Schema({
   ],
 });
 
-module.exports = model('User', userSchema);
+module.exports = model('Playlist', playlistSchema);

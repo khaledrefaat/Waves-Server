@@ -6,12 +6,16 @@ const HttpError = require('./models/http-error');
 
 const MONGODB_URI = 'mongodb://localhost:27017/waves';
 
-const userRouter = require('./routes/users-routes');
+const usersRouter = require('./routes/users-routes');
+const songsRouter = require('./routes/songs-routes');
+const playlistsRouter = require('./routes/playlists-routes');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/users', userRouter);
+app.use('/users', usersRouter);
+app.use('/songs', songsRouter);
+app.use('/playlists', playlistsRouter);
 
 app.use(() => {
   throw new HttpError('Couldnt find this route');

@@ -61,7 +61,13 @@ exports.signup = async (req, res, next) => {
       new HttpError('User already exists, please login instead', 422)
     );
 
-  const createdUser = new User({ username, password, email });
+  const createdUser = new User({
+    username,
+    password,
+    email,
+    playlists: [],
+    songs: [],
+  });
 
   try {
     await createdUser.save();
