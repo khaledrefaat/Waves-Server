@@ -2,6 +2,23 @@ const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
+exports.getUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await User.find({});
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Something went wrong when loading users, please try again later',
+        500
+      )
+    );
+  }
+
+  res.json(users);
+};
+
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 

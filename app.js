@@ -11,7 +11,7 @@ const userRouter = require('./routes/users-routes');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/auth', userRouter);
+app.use('/users', userRouter);
 
 app.use(() => {
   throw new HttpError('Couldnt find this route');
