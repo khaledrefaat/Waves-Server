@@ -24,7 +24,10 @@ exports.getPlaylist = async (req, res, next) => {
   let playlist;
 
   try {
-    playlist = await Playlist.findById(playlistId);
+    playlist = await Playlist.findById(playlistId).populate(
+      'creator',
+      'username _id'
+    );
   } catch (err) {
     console.log(err);
     return next(

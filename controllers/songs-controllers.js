@@ -5,6 +5,63 @@ const HttpError = require('../models/http-error');
 
 const { validationResult } = require('express-validator');
 
+exports.getSongs = async (req, res, next) => {
+  let songs;
+
+  try {
+    songs = await Song.find({});
+  } catch (err) {
+    return next(
+      new HttpError('Something went wrong, please try again later', 500)
+    );
+  }
+
+  res.json({ songs });
+};
+
+exports.getSong = async (req, res, next) => {
+  const { songId } = req.params;
+
+  let song;
+  try {
+    song = await Song.findById(songId).populate('creator', 'username _id');
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Something went wrong, please try again later', 500)
+    );
+  }
+
+  if (!song) {
+    return next(new HttpError('Couldnt find this song.', 422));
+  }
+
+  res.json(song);
+};
+
+exports.getUserSongs = async (req, res, next) => {
+  const { userId } = req.params;
+
+  let user;
+
+  try {
+    user = await User.findById(userId).select('username _id').populate('songs');
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Something went wrong, please try again later', 500)
+    );
+  }
+
+  if (!user) {
+    return next(
+      new HttpError('Something went wrong, please try again later', 500)
+    );
+  }
+
+  res.json(user);
+};
+
 exports.postSong = async (req, res, next) => {
   const validationErrorResult = validationResult(req);
 
@@ -56,18 +113,4 @@ exports.postSong = async (req, res, next) => {
   }
 
   res.json(createdSong);
-};
-
-exports.getSongs = async (req, res, next) => {
-  let songs;
-
-  try {
-    songs = await Song.find({});
-  } catch (err) {
-    return next(
-      new HttpError('Something went wrong, please try again later', 500)
-    );
-  }
-
-  res.json({ songs });
 };
