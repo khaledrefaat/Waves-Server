@@ -2,7 +2,6 @@ const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
-const { json } = require('express');
 
 exports.getPlaylists = async (req, res, next) => {
   let playlists;
@@ -17,6 +16,27 @@ exports.getPlaylists = async (req, res, next) => {
   }
 
   res.json(playlists);
+};
+
+exports.getPlaylist = async (req, res, next) => {
+  const { playlistId } = req.params;
+
+  let playlist;
+
+  try {
+    playlist = await Playlist.findById(playlistId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Something went wrong, please try again later.', 500)
+    );
+  }
+
+  if (!playlist) {
+    return next(new HttpError('Couldnt find this playlist.', 422));
+  }
+
+  res.json(playlist);
 };
 
 exports.getUserPlaylists = async (req, res, next) => {

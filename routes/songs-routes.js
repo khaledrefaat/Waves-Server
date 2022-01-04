@@ -7,6 +7,8 @@ const { postSong, getSongs } = require('../controllers/songs-controllers');
 
 router.get('/', getSongs);
 
+// router.get('/user/:userId', getUserSongs);
+
 router.post(
   '/',
   [check('song').not().isEmpty(), check('songName').not().isEmpty()],

@@ -5,10 +5,13 @@ const { check } = require('express-validator');
 const {
   postPlaylist,
   getPlaylists,
+  getPlaylist,
   getUserPlaylists,
 } = require('../controllers/playlist-controllers');
 
 router.get('/', getPlaylists);
+
+router.get('/:playlistId', getPlaylist);
 
 router.get('/user/:userId', getUserPlaylists);
 
