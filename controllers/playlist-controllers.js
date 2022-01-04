@@ -2,13 +2,54 @@ const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
+const { json } = require('express');
+
+exports.getPlaylists = async (req, res, next) => {
+  let playlists;
+
+  try {
+    playlists = await Playlist.find({});
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Something went wrong, please try again later.', 500)
+    );
+  }
+
+  res.json(playlists);
+};
+
+exports.getUserPlaylists = async (req, res, next) => {
+  const { userId } = req.params;
+
+  let user;
+
+  try {
+    user = await User.findById(userId)
+      .select('username _id')
+      .populate('playlists');
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Something went wrong, please try again later.', 500)
+    );
+  }
+
+  if (!user) {
+    return next(
+      new HttpError('Something went wrong, please try again later.', 500)
+    );
+  }
+
+  res.json(user);
+};
 
 exports.postPlaylist = async (req, res, next) => {
   const validationResultError = validationResult(req);
 
   console.log(validationResultError.isEmpty());
   if (!validationResultError.isEmpty()) {
-    next(new HttpError('Invalid Inputs!', 500));
+    return next(new HttpError('Invalid Inputs!', 500));
   }
 
   const { playlistName, playlistCover, userId } = req.body;
@@ -18,13 +59,13 @@ exports.postPlaylist = async (req, res, next) => {
     user = await User.findById(userId);
   } catch (err) {
     console.log(err);
-    next(
+    return next(
       new HttpError('Creating playlist failed, please try again later.', 500)
     );
   }
 
   if (!user) {
-    next(
+    return next(
       new HttpError('Creating playlist failed, please try again later.', 422)
     );
   }
@@ -42,7 +83,7 @@ exports.postPlaylist = async (req, res, next) => {
     await user.save();
   } catch (err) {
     console.log(err);
-    next(
+    return next(
       new HttpError('Creating playlist failed, please try again later.', 500)
     );
   }

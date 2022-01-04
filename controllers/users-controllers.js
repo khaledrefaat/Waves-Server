@@ -2,6 +2,8 @@ const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
+// make sure to make at some point users can add songs to thier playlists even if he was not the one who upload that song just like spotify or soundcloud
+
 exports.getUsers = async (req, res, next) => {
   let users;
   try {

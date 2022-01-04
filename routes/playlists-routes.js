@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 
-const { postPlaylist } = require('../controllers/playlist-controllers');
+const {
+  postPlaylist,
+  getPlaylists,
+  getUserPlaylists,
+} = require('../controllers/playlist-controllers');
+
+router.get('/', getPlaylists);
+
+router.get('/user/:userId', getUserPlaylists);
 
 router.post(
   '/',
