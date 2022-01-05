@@ -4,10 +4,11 @@ const router = express.Router();
 const { check } = require('express-validator');
 
 const {
-  postSong,
   getSongs,
   getSong,
   getUserSongs,
+  postSong,
+  postSongToPlaylist,
 } = require('../controllers/songs-controllers');
 
 router.get('/', getSongs);

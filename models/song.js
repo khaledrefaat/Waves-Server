@@ -11,11 +11,13 @@ const songSchema = new Schema({
   },
   songCover: String,
   songArtist: String,
-  playlist: {
-    type: Types.ObjectId,
-    required: true,
-    ref: 'Playlist',
-  },
+  // i was about to make teh song may be in many playlists here and i was about to implement the code to make user can push song to play list
+  playlists: [
+    {
+      type: Types.ObjectId,
+      ref: 'Playlist',
+    },
+  ],
   creator: {
     type: Types.ObjectId,
     required: true,

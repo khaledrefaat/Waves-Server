@@ -3,10 +3,12 @@ const router = express.Router();
 const { check } = require('express-validator');
 
 const {
-  postPlaylist,
   getPlaylists,
   getPlaylist,
   getUserPlaylists,
+  postPlaylist,
+  postSongToPlaylist,
+  deleteSongFromPlaylist,
 } = require('../controllers/playlist-controllers');
 
 router.get('/', getPlaylists);
@@ -22,6 +24,18 @@ router.post(
     check('playlistCover').not().isEmpty(),
   ],
   postPlaylist
+);
+
+router.post(
+  '/song',
+  [[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]],
+  postSongToPlaylist
+);
+
+router.delete(
+  '/song',
+  [[[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]]],
+  deleteSongFromPlaylist
 );
 
 module.exports = router;

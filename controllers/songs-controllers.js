@@ -69,14 +69,12 @@ exports.postSong = async (req, res, next) => {
     return next(new HttpError('Invalid Inputs!', 422));
   }
 
-  const { song, songName, songCover, songArtist, playlistId, userId } =
-    req.body;
+  const { song, songName, songCover, songArtist, userId } = req.body;
 
-  let user, playlist;
+  let user;
 
   try {
     user = await User.findById(userId);
-    playlist = await Playlist.findById(playlistId);
   } catch (err) {
     console.log(err);
     return next(
@@ -84,7 +82,7 @@ exports.postSong = async (req, res, next) => {
     );
   }
 
-  if (!playlist || !user) {
+  if (!user) {
     return next(
       new HttpError('Creating song failed, please try again later', 500)
     );
@@ -95,15 +93,13 @@ exports.postSong = async (req, res, next) => {
     songName,
     songCover,
     songArtist,
-    playlist: playlistId,
+    playlists: [],
     creator: userId,
   });
 
   try {
     await createdSong.save();
-    playlist.songs.push(createdSong);
     user.songs.push(createdSong);
-    await playlist.save();
     await user.save();
   } catch (err) {
     console.log(err);

@@ -1,5 +1,6 @@
 const Playlist = require('../models/playlist');
 const User = require('../models/user');
+const Song = require('../models/song');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
@@ -111,5 +112,156 @@ exports.postPlaylist = async (req, res, next) => {
     );
   }
 
-  res.json({ createdPlaylist, user });
+  res.json({ createdPlaylist });
+};
+
+exports.postSongToPlaylist = async (req, res, next) => {
+  const validationErrorResult = validationResult(req);
+
+  if (!validationErrorResult.isEmpty()) {
+    return next(
+      new HttpError(
+        'Adding song to playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  const { songId, playlistId } = req.body;
+
+  let song, playlist;
+
+  try {
+    song = await Song.findById(songId);
+    playlist = await Playlist.findById(playlistId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Adding song to playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  if (!song || !playlist) {
+    return next(
+      new HttpError(
+        'Adding song to playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  try {
+    playlist.songs.push(song);
+    playlist.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Adding song to playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  // this is preventing to make many playlists in the same song but not making many songs in the same playlist
+  const songPlaylist = song.playlists.find(
+    playlist => playlist._id.toString() === playlistId.toString()
+  );
+  if (songPlaylist) {
+    return next();
+  }
+
+  try {
+    song.playlists.push(playlist);
+    song.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Adding song to playlist failed, please try again later',
+        500
+      )
+    );
+  }
+  next();
+};
+
+exports.deleteSongFromPlaylist = async (req, res, next) => {
+  const validationErrorResult = validationResult(req);
+
+  if (!validationErrorResult.isEmpty()) {
+    return next(
+      new HttpError(
+        'Deleting song from playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  const { songId, playlistId } = req.body;
+
+  let song, playlist;
+
+  try {
+    song = await Song.findById(songId);
+    playlist = await Playlist.findById(playlistId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Deleting song from playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  if (!song || !playlist) {
+    return next(
+      new HttpError(
+        'Deleting song from playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  const playlistCurrentSongs = playlist.songs.filter(
+    song => song._id.toString() === songId
+  );
+
+  if (playlistCurrentSongs.length > 1) {
+    try {
+      playlistCurrentSongs.splice(-1);
+      playlist.songs = playlistCurrentSongs;
+      await playlist.save();
+    } catch (err) {
+      console.log(err);
+      return next(
+        new HttpError(
+          'Deleting song from playlist failed, please try again later',
+          500
+        )
+      );
+    }
+    return next();
+  }
+
+  try {
+    playlist.songs.pull(song);
+    await song.playlists.pull(playlist);
+    await song.save();
+    playlist.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError(
+        'Deleting song from playlist failed, please try again later',
+        500
+      )
+    );
+  }
+
+  next();
 };
