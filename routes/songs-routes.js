@@ -8,7 +8,7 @@ const {
   getSong,
   getUserSongs,
   postSong,
-  postSongToPlaylist,
+  deleteSong,
 } = require('../controllers/songs-controllers');
 
 router.get('/', getSongs);
@@ -23,4 +23,5 @@ router.post(
   postSong
 );
 
+router.delete('/', deleteSong);
 module.exports = router;

@@ -248,6 +248,8 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     return next();
   }
 
+  console.log(song);
+  console.log(playlist);
   try {
     playlist.songs.pull(song);
     await song.playlists.pull(playlist);
@@ -262,6 +264,5 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
       )
     );
   }
-
   next();
 };

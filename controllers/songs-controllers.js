@@ -110,3 +110,42 @@ exports.postSong = async (req, res, next) => {
 
   res.json(createdSong);
 };
+
+exports.deleteSong = async (req, res, next) => {
+  const { songId } = req.body;
+
+  let song;
+  try {
+    song = await Song.findById(songId).populate('creator');
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Deleting song failed, please try again later', 500)
+    );
+  }
+
+  if (!song) {
+    return next(
+      new HttpError('Deleting song failed, please try again later', 500)
+    );
+  }
+
+  try {
+    song.creator.songs.pull(song);
+
+    await Playlist.updateMany(
+      { _id: { $in: song.playlists } },
+      { $pullAll: { songs: [songId] } }
+    );
+
+    await song.creator.save();
+    await song.remove();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Deleting song failed, please try again later', 500)
+    );
+  }
+
+  next();
+};
