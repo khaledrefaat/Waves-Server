@@ -8,6 +8,7 @@ const {
   getUserPlaylists,
   postPlaylist,
   postSongToPlaylist,
+  updatePlaylist,
   deleteSongFromPlaylist,
   deletePlaylist,
 } = require('../controllers/playlist-controllers');
@@ -31,6 +32,15 @@ router.post(
   '/song',
   [[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]],
   postSongToPlaylist
+);
+
+router.patch(
+  '/:playlistId',
+  [
+    check('playlistName').not().isEmpty(),
+    check('playlistCover').not().isEmpty(),
+  ],
+  updatePlaylist
 );
 
 router.delete(

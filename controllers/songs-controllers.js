@@ -92,7 +92,7 @@ exports.postSong = async (req, res, next) => {
     song,
     songName,
     songCover,
-    songArtist,
+    songArtist: songArtist,
     playlists: [],
     creator: userId,
   });
@@ -109,6 +109,48 @@ exports.postSong = async (req, res, next) => {
   }
 
   res.json(createdSong);
+};
+
+exports.updateSong = async (req, res, next) => {
+  const validationErrorResult = validationResult(req);
+
+  if (!validationErrorResult.isEmpty()) {
+    return next(new HttpError('Invalid Inputs!', 422));
+  }
+
+  const { songId } = req.params;
+
+  const { song, songName, songCover, songArtist } = req.body;
+
+  let currentSong;
+  try {
+    currentSong = await Song.findById(songId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Update song failed, please try again later', 500)
+    );
+  }
+
+  if (!currentSong) {
+    return next(
+      new HttpError('Update song failed, please try again later', 500)
+    );
+  }
+
+  currentSong.song = song;
+  currentSong.songName = songName;
+  currentSong.songCover = songCover;
+  currentSong.songArtist = songArtist;
+  try {
+    await currentSong.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Update song failed, please try again later', 500)
+    );
+  }
+  next();
 };
 
 exports.deleteSong = async (req, res, next) => {

@@ -30,3 +30,5 @@ mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => app.listen(9000))
   .catch(err => console.log(err));
+
+// start next time by adding sessions and protect routes by middleware

@@ -9,6 +9,7 @@ const {
   getUserSongs,
   postSong,
   deleteSong,
+  updateSong,
 } = require('../controllers/songs-controllers');
 
 router.get('/', getSongs);
@@ -21,6 +22,12 @@ router.post(
   '/',
   [check('song').not().isEmpty(), check('songName').not().isEmpty()],
   postSong
+);
+
+router.patch(
+  '/:songId',
+  [[check('song').not().isEmpty(), check('songName').not().isEmpty()]],
+  updateSong
 );
 
 router.delete('/', deleteSong);

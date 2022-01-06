@@ -189,6 +189,49 @@ exports.postSongToPlaylist = async (req, res, next) => {
   next();
 };
 
+exports.updatePlaylist = async (req, res, next) => {
+  const validationErrorResult = validationResult(req);
+
+  if (!validationErrorResult.isEmpty()) {
+    return next(
+      new HttpError('Updating playlist failed, please try again later', 500)
+    );
+  }
+
+  const { playlistId } = req.params;
+  const { playlistName, playlistCover } = req.body;
+
+  let playlist;
+  try {
+    playlist = await Playlist.findById(playlistId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Updating playlist failed, please try again later', 500)
+    );
+  }
+
+  if (!playlist) {
+    return next(
+      new HttpError('Updating playlist failed, please try again later', 500)
+    );
+  }
+
+  playlist.playlistName = playlistName;
+  playlist.playlistCover = playlistCover;
+
+  try {
+    await playlist.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Updating playlist failed, please try again later', 500)
+    );
+  }
+
+  next();
+};
+
 exports.deleteSongFromPlaylist = async (req, res, next) => {
   const validationErrorResult = validationResult(req);
 
