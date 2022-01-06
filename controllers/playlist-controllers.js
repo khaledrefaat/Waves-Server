@@ -266,3 +266,39 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
   }
   next();
 };
+
+exports.deletePlaylist = async (req, res, next) => {
+  const { playlistId } = req.body;
+
+  let playlist;
+  try {
+    playlist = await Playlist.findById(playlistId).populate(
+      'creator',
+      'playlists'
+    );
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Deleting playlist failed, please try again later', 500)
+    );
+  }
+
+  if (!playlist) {
+    return next(
+      new HttpError('Deleting playlist failed, please try again later', 500)
+    );
+  }
+
+  try {
+    playlist.creator.playlists.pull(playlist);
+    await playlist.creator.save();
+    await playlist.remove();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Deleting playlist failed, please try again later', 500)
+    );
+  }
+
+  next();
+};

@@ -9,6 +9,7 @@ const {
   postPlaylist,
   postSongToPlaylist,
   deleteSongFromPlaylist,
+  deletePlaylist,
 } = require('../controllers/playlist-controllers');
 
 router.get('/', getPlaylists);
@@ -37,5 +38,7 @@ router.delete(
   [[[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]]],
   deleteSongFromPlaylist
 );
+
+router.delete('/', deletePlaylist);
 
 module.exports = router;
