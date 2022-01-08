@@ -12,11 +12,15 @@ const {
   updateSong,
 } = require('../controllers/songs-controllers');
 
+const checkAuth = require('../middlewares/check-auth');
+
 router.get('/', getSongs);
 
 router.get('/:songId', getSong);
 
 router.get('/user/:userId', getUserSongs);
+
+router.use(checkAuth);
 
 router.post(
   '/',

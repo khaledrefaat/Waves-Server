@@ -69,12 +69,12 @@ exports.postSong = async (req, res, next) => {
     return next(new HttpError('Invalid Inputs!', 422));
   }
 
-  const { song, songName, songCover, songArtist, userId } = req.body;
+  const { song, songName, songCover, songArtist } = req.body;
 
   let user;
 
   try {
-    user = await User.findById(userId);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     console.log(err);
     return next(
@@ -94,7 +94,7 @@ exports.postSong = async (req, res, next) => {
     songCover,
     songArtist: songArtist,
     playlists: [],
-    creator: userId,
+    creator: req.userData.userId,
   });
 
   try {

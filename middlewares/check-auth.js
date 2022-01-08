@@ -8,11 +8,12 @@ module.exports = async (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     if (!token) {
       return next(new HttpError('Authentication failed!', 401));
-      const decodedToken = jwt.verify(token, 'SUPER_SECRET_DONT_EVER_SHARE');
-      req.userData = { userId: decodedToken.userId };
     }
+    const decodedToken = jwt.verify(token, 'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e');
+    req.userData = { userId: decodedToken.userId };
+    next();
   } catch (err) {
     console.log(err);
-    throw new Error('Authentication failed!');
+    return next(new HttpError('Authentication failed!', 401));
   }
 };

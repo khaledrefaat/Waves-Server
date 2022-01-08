@@ -1,8 +1,7 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
-
-// make sure to make at some point users can add songs to thier playlists even if he was not the one who upload that song just like spotify or soundcloud
 
 exports.getUsers = async (req, res, next) => {
   let users;
@@ -24,18 +23,34 @@ exports.getUsers = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  let user;
+  let exsistingUser;
   try {
-    user = await User.findOne({ email });
+    exsistingUser = await User.findOne({ email });
   } catch (err) {
     console.log(err);
-    return next(new HttpError('Signup failed, please try again later', 500));
+    return next(new HttpError('Loging in failed, please try again later', 500));
   }
 
-  if (!user || user.password !== password)
+  if (!exsistingUser || exsistingUser.password !== password)
     return next(new HttpError('Incorrect username or password', 401));
 
-  res.json({ user, message: 'Logged In ^_^' });
+  let token;
+
+  try {
+    token = jwt.sign(
+      {
+        userId: exsistingUser._id,
+        email: exsistingUser.email,
+      },
+      'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
+      { expiresIn: '7d' }
+    );
+  } catch (err) {
+    console.log(err);
+    return next(new HttpError('Loging in failed, please try again later', 500));
+  }
+
+  res.json({ user: exsistingUser, token });
 };
 
 exports.signup = async (req, res, next) => {
@@ -78,5 +93,18 @@ exports.signup = async (req, res, next) => {
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
-  res.json(createdUser);
+  let token;
+
+  try {
+    token = jwt.sign(
+      { userId: createdUser.userId, email: createdUser.email },
+      'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
+      { expiresIn: '7d' }
+    );
+  } catch (err) {
+    console.log(err);
+    return next(HttpError('Signup failed, please try again later', 500));
+  }
+
+  res.json({ user: createdUser, token });
 };

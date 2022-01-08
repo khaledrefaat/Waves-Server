@@ -13,11 +13,15 @@ const {
   deletePlaylist,
 } = require('../controllers/playlist-controllers');
 
+const checkAuth = require('../middlewares/check-auth');
+
 router.get('/', getPlaylists);
 
 router.get('/:playlistId', getPlaylist);
 
 router.get('/user/:userId', getUserPlaylists);
+
+router.use(checkAuth);
 
 router.post(
   '/',
