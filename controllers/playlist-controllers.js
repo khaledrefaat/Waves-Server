@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const Song = require('../models/song');
@@ -102,9 +104,12 @@ exports.postPlaylist = async (req, res, next) => {
   });
 
   try {
-    await createdPlaylist.save();
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await createdPlaylist.save({ session });
     user.playlists.push(createdPlaylist);
-    await user.save();
+    await user.save({ session });
+    session.commitTransaction();
   } catch (err) {
     console.log(err);
     return next(
@@ -154,8 +159,6 @@ exports.postSongToPlaylist = async (req, res, next) => {
   }
 
   try {
-    playlist.songs.push(song);
-    playlist.save();
   } catch (err) {
     console.log(err);
     return next(
@@ -167,16 +170,21 @@ exports.postSongToPlaylist = async (req, res, next) => {
   }
 
   // this is preventing to make many playlists in the same song but not making many songs in the same playlist
-  const songPlaylist = song.playlists.find(
+
+  const findSongPlaylist = song.playlists.find(
     playlist => playlist._id.toString() === playlistId.toString()
   );
-  if (songPlaylist) {
-    return next();
-  }
 
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    playlist.songs.push(song);
     song.playlists.push(playlist);
-    song.save();
+    await playlist.save({ session });
+    if (!findSongPlaylist) {
+      await song.save({ session });
+    }
+    session.commitTransaction();
   } catch (err) {
     console.log(err);
     return next(
@@ -291,13 +299,14 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     return next();
   }
 
-  console.log(song);
-  console.log(playlist);
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     playlist.songs.pull(song);
-    await song.playlists.pull(playlist);
-    await song.save();
-    playlist.save();
+    song.playlists.pull(playlist);
+    await song.save({ session });
+    await playlist.save({ session });
+    session.commitTransaction();
   } catch (err) {
     console.log(err);
     return next(

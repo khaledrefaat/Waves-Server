@@ -2,6 +2,7 @@ const Song = require('../models/song');
 const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const HttpError = require('../models/http-error');
+const mongoose = require('mongoose');
 
 const { validationResult } = require('express-validator');
 
@@ -98,9 +99,12 @@ exports.postSong = async (req, res, next) => {
   });
 
   try {
-    await createdSong.save();
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await createdSong.save({ session });
     user.songs.push(createdSong);
-    await user.save();
+    await user.save({ session });
+    session.commitTransaction();
   } catch (err) {
     console.log(err);
     return next(
@@ -173,6 +177,9 @@ exports.deleteSong = async (req, res, next) => {
   }
 
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     song.creator.songs.pull(song);
 
     await Playlist.updateMany(
@@ -180,8 +187,10 @@ exports.deleteSong = async (req, res, next) => {
       { $pullAll: { songs: [songId] } }
     );
 
-    await song.creator.save();
-    await song.remove();
+    await song.creator.save({ session });
+    await song.remove({ session });
+
+    session.commitTransaction();
   } catch (err) {
     console.log(err);
     return next(

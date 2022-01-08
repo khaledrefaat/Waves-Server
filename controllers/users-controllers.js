@@ -93,11 +93,13 @@ exports.signup = async (req, res, next) => {
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
+  console.log(createdUser);
+
   let token;
 
   try {
     token = jwt.sign(
-      { userId: createdUser.userId, email: createdUser.email },
+      { userId: createdUser._id, email: createdUser.email },
       'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
       { expiresIn: '7d' }
     );

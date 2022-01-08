@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 
 const HttpError = require('./models/http-error');
 
-const MONGODB_URI = 'mongodb://localhost:27017/waves';
+const MONGODB_URI =
+  'mongodb+srv://khaledrefaat:5214705@cluster0.nos6l.mongodb.net/waves';
 
 const usersRouter = require('./routes/users-routes');
 const songsRouter = require('./routes/songs-routes');
