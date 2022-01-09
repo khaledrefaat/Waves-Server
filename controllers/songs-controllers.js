@@ -17,7 +17,7 @@ exports.getSongs = async (req, res, next) => {
     );
   }
 
-  res.json({ songs });
+  res.json(songs);
 };
 
 exports.getSong = async (req, res, next) => {

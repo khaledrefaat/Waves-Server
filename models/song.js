@@ -9,7 +9,10 @@ const songSchema = new Schema({
     type: String,
     required: true,
   },
-  songCover: String,
+  songCover: {
+    type: String,
+    required: true,
+  },
   songArtist: String,
   // i was about to make teh song may be in many playlists here and i was about to implement the code to make user can push song to play list
   playlists: [

@@ -6,7 +6,7 @@ const { validationResult } = require('express-validator');
 exports.getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find({});
+    users = await User.find({}).select('_id username playlists image');
   } catch (err) {
     console.log(err);
     return next(
@@ -59,7 +59,7 @@ exports.signup = async (req, res, next) => {
   if (!validationErrorResult.isEmpty())
     return next(new HttpError('Invalid Inputs!', 422));
 
-  const { username, email, password, passwordConfirmation } = req.body;
+  const { username, email, password, passwordConfirmation, image } = req.body;
 
   if (password !== passwordConfirmation)
     return next(new HttpError('Invalid Inputs!', 422));
@@ -82,6 +82,7 @@ exports.signup = async (req, res, next) => {
     username,
     password,
     email,
+    image,
     playlists: [],
     songs: [],
   });

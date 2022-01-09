@@ -24,7 +24,11 @@ router.use(checkAuth);
 
 router.post(
   '/',
-  [check('song').not().isEmpty(), check('songName').not().isEmpty()],
+  [
+    check('song').not().isEmpty(),
+    check('songName').not().isEmpty(),
+    check('songCover').not().isEmpty(),
+  ],
   postSong
 );
 
