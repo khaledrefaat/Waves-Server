@@ -2,7 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 
-const { login, signup, getUsers } = require('../controllers/users-controllers');
+const checkAuth = require('../middlewares/check-auth');
+
+const {
+  login,
+  signup,
+  getUsers,
+  updateUser,
+} = require('../controllers/users-controllers');
 
 router.get('/', getUsers);
 
@@ -18,5 +25,9 @@ router.post(
   ],
   signup
 );
+
+router.use(checkAuth);
+
+router.patch('/', updateUser);
 
 module.exports = router;

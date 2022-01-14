@@ -59,7 +59,13 @@ exports.signup = async (req, res, next) => {
   if (!validationErrorResult.isEmpty())
     return next(new HttpError('Invalid Inputs!', 422));
 
-  const { username, email, password, passwordConfirmation, image } = req.body;
+  const {
+    username,
+    email,
+    password,
+    passwordConfirmation,
+    image = 'https://manskkp.lv/assets/images/users/default-user.png',
+  } = req.body;
 
   if (password !== passwordConfirmation)
     return next(new HttpError('Invalid Inputs!', 422));
@@ -110,4 +116,39 @@ exports.signup = async (req, res, next) => {
   }
 
   res.json({ user: createdUser, token });
+};
+
+exports.updateUser = async (req, res, next) => {
+  const { username, image } = req.body;
+
+  let exsistingUser;
+
+  try {
+    exsistingUser = await User.findById(req.userData.userId);
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Upading user failed, please try again later.', 500)
+    );
+  }
+
+  if (!exsistingUser) {
+    return next(
+      new HttpError('Upading user failed, please try again later.', 500)
+    );
+  }
+
+  if (username) exsistingUser.username = username;
+  if (image) exsistingUser.image = image;
+
+  try {
+    await exsistingUser.save();
+  } catch (err) {
+    console.log(err);
+    return next(
+      new HttpError('Upading user failed, please try again later.', 500)
+    );
+  }
+
+  next();
 };
