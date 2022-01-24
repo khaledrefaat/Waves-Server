@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const path = require('path');
 
 const HttpError = require('./models/http-error');
 
@@ -14,6 +15,8 @@ const playlistsRouter = require('./routes/playlists-routes');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -25,9 +28,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/users', usersRouter);
-app.use('/songs', songsRouter);
-app.use('/playlists', playlistsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/songs', songsRouter);
+app.use('/api/playlists', playlistsRouter);
 
 app.use(() => {
   throw new HttpError('Couldnt find this route');

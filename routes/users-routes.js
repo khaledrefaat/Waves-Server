@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 
-const checkAuth = require('../middlewares/check-auth');
-
 const {
   login,
   signup,
@@ -25,8 +23,6 @@ router.post(
   ],
   signup
 );
-
-router.use(checkAuth);
 
 router.patch('/', updateUser);
 

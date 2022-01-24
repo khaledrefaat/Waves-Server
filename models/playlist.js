@@ -10,9 +10,16 @@ const playlistSchema = new Schema({
     required: true,
   },
   creator: {
-    type: Types.ObjectId,
-    required: true,
-    ref: 'User',
+    id: {
+      type: Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    creator: {
+      type: String,
+      required: true,
+      ref: 'User',
+    },
   },
   songs: [
     {

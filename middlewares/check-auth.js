@@ -10,7 +10,10 @@ module.exports = async (req, res, next) => {
       return next(new HttpError('Authentication failed!', 401));
     }
     const decodedToken = jwt.verify(token, 'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e');
-    req.userData = { userId: decodedToken.userId };
+    req.userData = {
+      userId: decodedToken.userId,
+      username: decodedToken.username,
+    };
     next();
   } catch (err) {
     console.log(err);

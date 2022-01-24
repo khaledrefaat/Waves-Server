@@ -92,10 +92,10 @@ exports.postSong = async (req, res, next) => {
   const createdSong = new Song({
     song,
     songName,
-    songCover,
+    songCover: 'uploads/images/song.jpg',
     songArtist: songArtist,
     playlists: [],
-    creator: req.userData.userId,
+    creator: { id: req.userData.userId, creator: req.userData.username },
   });
 
   try {

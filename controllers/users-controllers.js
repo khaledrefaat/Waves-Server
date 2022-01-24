@@ -41,6 +41,7 @@ exports.login = async (req, res, next) => {
       {
         userId: exsistingUser._id,
         email: exsistingUser.email,
+        username: exsistingUser.username,
       },
       'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
       { expiresIn: '7d' }
@@ -50,7 +51,7 @@ exports.login = async (req, res, next) => {
     return next(new HttpError('Loging in failed, please try again later', 500));
   }
 
-  res.json({ user: exsistingUser, token });
+  res.json({ userId: exsistingUser._id, token });
 };
 
 exports.signup = async (req, res, next) => {
@@ -64,7 +65,7 @@ exports.signup = async (req, res, next) => {
     email,
     password,
     passwordConfirmation,
-    image = 'https://manskkp.lv/assets/images/users/default-user.png',
+    image = 'uploads/images/avatar.png',
   } = req.body;
 
   if (password !== passwordConfirmation)
@@ -100,13 +101,15 @@ exports.signup = async (req, res, next) => {
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
-  console.log(createdUser);
-
   let token;
 
   try {
     token = jwt.sign(
-      { userId: createdUser._id, email: createdUser.email },
+      {
+        userId: createdUser._id,
+        email: createdUser.email,
+        username: createdUser.username,
+      },
       'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
       { expiresIn: '7d' }
     );
@@ -115,7 +118,7 @@ exports.signup = async (req, res, next) => {
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
-  res.json({ user: createdUser, token });
+  res.json({ userId: createdUser._id, token });
 };
 
 exports.updateUser = async (req, res, next) => {

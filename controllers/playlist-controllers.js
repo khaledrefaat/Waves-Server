@@ -28,8 +28,8 @@ exports.getPlaylist = async (req, res, next) => {
 
   try {
     playlist = await Playlist.findById(playlistId).populate(
-      'creator',
-      'username _id'
+      'creator songs',
+      'username _id song songName songCover creator'
     );
   } catch (err) {
     console.log(err);
@@ -51,9 +51,7 @@ exports.getUserPlaylists = async (req, res, next) => {
   let user;
 
   try {
-    user = await User.findById(userId)
-      .select('username _id')
-      .populate('playlists');
+    user = await User.findById(userId).populate('playlists');
   } catch (err) {
     console.log(err);
     return next(
@@ -67,7 +65,7 @@ exports.getUserPlaylists = async (req, res, next) => {
     );
   }
 
-  res.json(user);
+  res.json(user.playlists);
 };
 
 exports.postPlaylist = async (req, res, next) => {
@@ -98,8 +96,8 @@ exports.postPlaylist = async (req, res, next) => {
 
   const createdPlaylist = new Playlist({
     playlistName,
-    playlistCover,
-    creator: req.userData.userId,
+    playlistCover: 'uploads/images/playlist.jpg',
+    creator: { id: req.userData.userId, creator: req.userData.username },
     songs: [],
   });
 
