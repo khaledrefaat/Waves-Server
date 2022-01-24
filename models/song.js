@@ -21,16 +21,9 @@ const songSchema = new Schema({
     },
   ],
   creator: {
-    id: {
-      type: Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
-    creator: {
-      type: String,
-      required: true,
-      ref: 'User',
-    },
+    type: Types.ObjectId,
+    required: true,
+    ref: 'User',
   },
 });
 

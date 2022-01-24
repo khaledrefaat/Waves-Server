@@ -95,7 +95,7 @@ exports.postSong = async (req, res, next) => {
     songCover: 'uploads/images/song.jpg',
     songArtist: songArtist,
     playlists: [],
-    creator: { id: req.userData.userId, creator: req.userData.username },
+    creator: req.userData.userId,
   });
 
   try {
