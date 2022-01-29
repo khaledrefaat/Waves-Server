@@ -23,9 +23,7 @@ const playlistSchema = new Schema({
   },
   songs: [
     {
-      type: Types.ObjectId,
-      required: true,
-      ref: 'Song',
+      song: { type: Types.ObjectId, required: true, ref: 'Song' },
     },
   ],
 });

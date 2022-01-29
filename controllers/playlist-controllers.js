@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { nanoid } = require('nanoid');
 const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const Song = require('../models/song');
@@ -156,33 +156,10 @@ exports.postSongToPlaylist = async (req, res, next) => {
     );
   }
 
-  try {
-  } catch (err) {
-    console.log(err);
-    return next(
-      new HttpError(
-        'Adding song to playlist failed, please try again later',
-        500
-      )
-    );
-  }
-
   // this is preventing to make many playlists in the same song but not making many songs in the same playlist
-
-  const findSongPlaylist = song.playlists.find(
-    playlist => playlist._id.toString() === playlistId.toString()
-  );
-
   try {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    playlist.songs.push(song);
-    song.playlists.push(playlist);
-    await playlist.save({ session });
-    if (!findSongPlaylist) {
-      await song.save({ session });
-    }
-    session.commitTransaction();
+    playlist.songs.push({ song, playlistSong: mongoose.Types.ObjectId() });
+    await playlist.save();
   } catch (err) {
     console.log(err);
     return next(
@@ -250,7 +227,7 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     );
   }
 
-  const { songId, playlistId } = req.body;
+  const { songId, playlistId, id } = req.body;
 
   let song, playlist;
 
@@ -280,31 +257,14 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     song => song._id.toString() === songId
   );
 
-  if (playlistCurrentSongs.length > 1) {
-    try {
+  try {
+    if (playlistCurrentSongs.length > 1) {
       playlistCurrentSongs.splice(-1);
       playlist.songs = playlistCurrentSongs;
-      await playlist.save();
-    } catch (err) {
-      console.log(err);
-      return next(
-        new HttpError(
-          'Deleting song from playlist failed, please try again later',
-          500
-        )
-      );
+    } else {
+      playlist.songs.pull({ song, _id: id });
     }
-    return next();
-  }
-
-  try {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    playlist.songs.pull(song);
-    song.playlists.pull(playlist);
-    await song.save({ session });
-    await playlist.save({ session });
-    session.commitTransaction();
+    await playlist.save();
   } catch (err) {
     console.log(err);
     return next(

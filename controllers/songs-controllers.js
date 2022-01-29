@@ -66,6 +66,8 @@ exports.getUserSongs = async (req, res, next) => {
 exports.postSong = async (req, res, next) => {
   const validationErrorResult = validationResult(req);
 
+  console.log(req.body);
+
   if (!validationErrorResult.isEmpty()) {
     return next(new HttpError('Invalid Inputs!', 422));
   }
@@ -96,6 +98,7 @@ exports.postSong = async (req, res, next) => {
     songArtist: songArtist,
     playlists: [],
     creator: req.userData.userId,
+    active: false,
   });
 
   try {

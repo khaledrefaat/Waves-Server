@@ -5,8 +5,7 @@ const path = require('path');
 
 const HttpError = require('./models/http-error');
 
-const MONGODB_URI =
-  'mongodb+srv://khaledrefaat:5214705@cluster0.nos6l.mongodb.net/waves';
+const MONGODB_URI = '';
 
 const usersRouter = require('./routes/users-routes');
 const songsRouter = require('./routes/songs-routes');

@@ -14,12 +14,6 @@ const songSchema = new Schema({
     required: true,
   },
   songArtist: String,
-  playlists: [
-    {
-      type: Types.ObjectId,
-      ref: 'Playlist',
-    },
-  ],
   creator: {
     type: Types.ObjectId,
     required: true,
