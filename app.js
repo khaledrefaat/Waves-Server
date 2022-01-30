@@ -3,9 +3,10 @@ const app = express();
 const mongoose = require('mongoose');
 const path = require('path');
 
+const keys = require('./config/keys');
 const HttpError = require('./models/http-error');
 
-const MONGODB_URI = 'add_your_api_key_here';
+const MONGODB_URI = keys.mongoUri;
 
 const usersRouter = require('./routes/users-routes');
 const songsRouter = require('./routes/songs-routes');
