@@ -53,6 +53,6 @@ router.delete(
   deleteSongFromPlaylist
 );
 
-router.delete('/', deletePlaylist);
+router.delete('/:playlistId', deletePlaylist);
 
 module.exports = router;

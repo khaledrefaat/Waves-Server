@@ -5,7 +5,7 @@ const path = require('path');
 
 const HttpError = require('./models/http-error');
 
-const MONGODB_URI = '';
+const MONGODB_URI = 'add_your_api_key_here';
 
 const usersRouter = require('./routes/users-routes');
 const songsRouter = require('./routes/songs-routes');

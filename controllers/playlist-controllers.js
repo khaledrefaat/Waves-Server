@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { nanoid } = require('nanoid');
 const Playlist = require('../models/playlist');
 const User = require('../models/user');
 const Song = require('../models/song');
@@ -147,6 +146,10 @@ exports.postSongToPlaylist = async (req, res, next) => {
     );
   }
 
+  if (playlist.creator.id !== req.userData.userId) {
+    return next(new HttpError('Authorization failed!', 401));
+  }
+
   if (!song || !playlist) {
     return next(
       new HttpError(
@@ -200,6 +203,10 @@ exports.updatePlaylist = async (req, res, next) => {
     );
   }
 
+  if (playlist.creator.id !== req.userData.userId) {
+    return next(new HttpError('Authorization failed!', 401));
+  }
+
   playlist.playlistName = playlistName;
   playlist.playlistCover = playlistCover;
 
@@ -244,6 +251,10 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     );
   }
 
+  if (playlist.creator.id !== req.userData.userId) {
+    return next(new HttpError('Authorization failed!', 401));
+  }
+
   if (!song || !playlist) {
     return next(
       new HttpError(
@@ -278,7 +289,7 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
 };
 
 exports.deletePlaylist = async (req, res, next) => {
-  const { playlistId } = req.body;
+  const { playlistId } = req.params;
 
   let playlist;
   try {
@@ -297,6 +308,10 @@ exports.deletePlaylist = async (req, res, next) => {
     return next(
       new HttpError('Deleting playlist failed, please try again later', 500)
     );
+  }
+
+  if (playlist.creator.id !== req.userData.userId) {
+    return next(new HttpError('Authorization failed!', 401));
   }
 
   try {
