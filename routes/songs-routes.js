@@ -38,5 +38,5 @@ router.patch(
   updateSong
 );
 
-router.delete('/', deleteSong);
+router.delete('/:songId', deleteSong);
 module.exports = router;

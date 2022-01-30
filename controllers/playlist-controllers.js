@@ -146,7 +146,7 @@ exports.postSongToPlaylist = async (req, res, next) => {
     );
   }
 
-  if (playlist.creator.id !== req.userData.userId) {
+  if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
     return next(new HttpError('Authorization failed!', 401));
   }
 
@@ -203,7 +203,7 @@ exports.updatePlaylist = async (req, res, next) => {
     );
   }
 
-  if (playlist.creator.id !== req.userData.userId) {
+  if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
     return next(new HttpError('Authorization failed!', 401));
   }
 
@@ -251,7 +251,7 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
     );
   }
 
-  if (playlist.creator.id !== req.userData.userId) {
+  if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
     return next(new HttpError('Authorization failed!', 401));
   }
 
@@ -310,7 +310,7 @@ exports.deletePlaylist = async (req, res, next) => {
     );
   }
 
-  if (playlist.creator.id !== req.userData.userId) {
+  if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
     return next(new HttpError('Authorization failed!', 401));
   }
 

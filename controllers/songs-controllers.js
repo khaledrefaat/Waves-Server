@@ -144,6 +144,9 @@ exports.updateSong = async (req, res, next) => {
       new HttpError('Update song failed, please try again later', 500)
     );
   }
+  if (currentSong.creator.toString() !== req.userData.userId.toString()) {
+    return next(new HttpError('Authorization failed!', 401));
+  }
 
   currentSong.song = song;
   currentSong.songName = songName;
@@ -161,7 +164,7 @@ exports.updateSong = async (req, res, next) => {
 };
 
 exports.deleteSong = async (req, res, next) => {
-  const { songId } = req.body;
+  const { songId } = req.params;
 
   let song;
   try {
@@ -177,6 +180,10 @@ exports.deleteSong = async (req, res, next) => {
     return next(
       new HttpError('Deleting song failed, please try again later', 500)
     );
+  }
+
+  if (song.creator.toString() !== req.userData.userId.toString()) {
+    return next(new HttpError('Authorization failed!', 401));
   }
 
   try {
