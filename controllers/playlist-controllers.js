@@ -5,6 +5,8 @@ const Song = require('../models/song');
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 
+// helper function
+
 exports.getPlaylists = async (req, res, next) => {
   let playlists;
 
@@ -68,11 +70,11 @@ exports.getUserPlaylists = async (req, res, next) => {
 };
 
 exports.postPlaylist = async (req, res, next) => {
-  const validationResultError = validationResult(req);
+  const error = validationResult(req);
 
-  console.log(validationResultError.isEmpty());
-  if (!validationResultError.isEmpty()) {
-    return next(new HttpError('Invalid Inputs!', 500));
+  console.log(error.isEmpty());
+  if (!error.isEmpty()) {
+    return next(new HttpError(error.array()[0].msg, 500));
   }
 
   const { playlistName, playlistCover } = req.body;
@@ -118,15 +120,10 @@ exports.postPlaylist = async (req, res, next) => {
 };
 
 exports.postSongToPlaylist = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const error = validationResult(req);
 
-  if (!validationErrorResult.isEmpty()) {
-    return next(
-      new HttpError(
-        'Adding song to playlist failed, please try again later',
-        500
-      )
-    );
+  if (!error.isEmpty()) {
+    return next(new HttpError(error.array()[0].msg, 500));
   }
 
   const { songId, playlistId } = req.body;
@@ -176,12 +173,10 @@ exports.postSongToPlaylist = async (req, res, next) => {
 };
 
 exports.updatePlaylist = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const error = validationResult(req);
 
-  if (!validationErrorResult.isEmpty()) {
-    return next(
-      new HttpError('Updating playlist failed, please try again later', 500)
-    );
+  if (!error.isEmpty()) {
+    return next(new HttpError(error.array()[0].msg, 500));
   }
 
   const { playlistId } = req.params;
@@ -223,15 +218,10 @@ exports.updatePlaylist = async (req, res, next) => {
 };
 
 exports.deleteSongFromPlaylist = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const error = validationResult(req);
 
-  if (!validationErrorResult.isEmpty()) {
-    return next(
-      new HttpError(
-        'Deleting song from playlist failed, please try again later',
-        500
-      )
-    );
+  if (!error.isEmpty()) {
+    return next(new HttpError(error.array()[0].msg, 500));
   }
 
   const { songId, playlistId, id } = req.body;

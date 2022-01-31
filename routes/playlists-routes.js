@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { check } = require('express-validator');
+const { body } = require('express-validator');
 
 const {
   getPlaylists,
@@ -25,31 +25,25 @@ router.use(checkAuth);
 
 router.post(
   '/',
-  [
-    check('playlistName').not().isEmpty(),
-    check('playlistCover').not().isEmpty(),
-  ],
+  [body('playlistName').not().isEmpty(), body('playlistCover').not().isEmpty()],
   postPlaylist
 );
 
 router.post(
   '/song',
-  [[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]],
+  [[body('songId').not().isEmpty(), body('playlistId').not().isEmpty()]],
   postSongToPlaylist
 );
 
 router.patch(
   '/:playlistId',
-  [
-    check('playlistName').not().isEmpty(),
-    check('playlistCover').not().isEmpty(),
-  ],
+  [body('playlistName').not().isEmpty(), body('playlistCover').not().isEmpty()],
   updatePlaylist
 );
 
 router.delete(
   '/song',
-  [[[check('songId').not().isEmpty(), check('playlistId').not().isEmpty()]]],
+  [[[body('songId').not().isEmpty(), body('playlistId').not().isEmpty()]]],
   deleteSongFromPlaylist
 );
 

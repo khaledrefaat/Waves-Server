@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { check } = require('express-validator');
+const { body } = require('express-validator');
 
 const {
   getSongs,
@@ -25,16 +25,16 @@ router.use(checkAuth);
 router.post(
   '/',
   [
-    check('song').not().isEmpty(),
-    check('songName').not().isEmpty(),
-    check('songCover').not().isEmpty(),
+    body('song').not().isEmpty(),
+    body('songName').not().isEmpty(),
+    body('songCover').not().isEmpty(),
   ],
   postSong
 );
 
 router.patch(
   '/:songId',
-  [[check('song').not().isEmpty(), check('songName').not().isEmpty()]],
+  [[body('song').not().isEmpty(), body('songName').not().isEmpty()]],
   updateSong
 );
 

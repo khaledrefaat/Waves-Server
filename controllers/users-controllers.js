@@ -23,15 +23,17 @@ exports.getUsers = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  let exsistingUser;
+  let existingUser;
   try {
-    exsistingUser = await User.findOne({ email });
+    existingUser = await User.findOne({ email });
   } catch (err) {
     console.log(err);
-    return next(new HttpError('Loging in failed, please try again later', 500));
+    return next(
+      new HttpError('Logging in failed, please try again later', 500)
+    );
   }
 
-  if (!exsistingUser || exsistingUser.password !== password)
+  if (!existingUser || existingUser.password !== password)
     return next(new HttpError('Incorrect username or password', 401));
 
   let token;
@@ -39,26 +41,28 @@ exports.login = async (req, res, next) => {
   try {
     token = jwt.sign(
       {
-        userId: exsistingUser._id,
-        email: exsistingUser.email,
-        username: exsistingUser.username,
+        userId: existingUser._id,
+        email: existingUser.email,
+        username: existingUser.username,
       },
       'a/Z%;@y3X-dvzBpD"!z4w(+{?>tb4e',
       { expiresIn: '7d' }
     );
   } catch (err) {
     console.log(err);
-    return next(new HttpError('Loging in failed, please try again later', 500));
+    return next(
+      new HttpError('Logging in failed, please try again later', 500)
+    );
   }
 
-  res.json({ userId: exsistingUser._id, token });
+  res.json({ userId: existingUser._id, token });
 };
 
 exports.signup = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const errorResult = validationResult(req);
 
-  if (!validationErrorResult.isEmpty())
-    return next(new HttpError('Invalid Inputs!', 422));
+  if (!errorResult.isEmpty())
+    return next(new HttpError(errorResult.array()[0].msg, 422));
 
   const {
     username,
@@ -68,19 +72,16 @@ exports.signup = async (req, res, next) => {
     image = 'uploads/images/avatar.png',
   } = req.body;
 
-  if (password !== passwordConfirmation)
-    return next(new HttpError('Invalid Inputs!', 422));
-
-  let exsistingUser;
+  let existingUser;
 
   try {
-    exsistingUser = await User.findOne({ email });
+    existingUser = await User.findOne({ email });
   } catch (err) {
     console.log(err);
     return next(HttpError('Signup failed, please try again later', 500));
   }
 
-  if (exsistingUser)
+  if (existingUser)
     return next(
       new HttpError('User already exists, please login instead', 422)
     );
@@ -124,32 +125,32 @@ exports.signup = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
   const { username, image } = req.body;
 
-  let exsistingUser;
+  let existingUser;
 
   try {
-    exsistingUser = await User.findById(req.userData.userId);
+    existingUser = await User.findById(req.userData.userId);
   } catch (err) {
     console.log(err);
     return next(
-      new HttpError('Upading user failed, please try again later.', 500)
+      new HttpError('Updating user failed, please try again later.', 500)
     );
   }
 
-  if (!exsistingUser) {
+  if (!existingUser) {
     return next(
-      new HttpError('Upading user failed, please try again later.', 500)
+      new HttpError('Updating user failed, please try again later.', 500)
     );
   }
 
-  if (username) exsistingUser.username = username;
-  if (image) exsistingUser.image = image;
+  if (username) existingUser.username = username;
+  if (image) existingUser.image = image;
 
   try {
-    await exsistingUser.save();
+    await existingUser.save();
   } catch (err) {
     console.log(err);
     return next(
-      new HttpError('Upading user failed, please try again later.', 500)
+      new HttpError('Updating user failed, please try again later.', 500)
     );
   }
 

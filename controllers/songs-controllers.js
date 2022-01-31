@@ -64,12 +64,12 @@ exports.getUserSongs = async (req, res, next) => {
 };
 
 exports.postSong = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const errorResult = validationResult(req);
 
   console.log(req.body);
 
-  if (!validationErrorResult.isEmpty()) {
-    return next(new HttpError('Invalid Inputs!', 422));
+  if (!errorResult.isEmpty()) {
+    return next(new HttpError(errorResult.array()[0].msg, 422));
   }
 
   const { song, songName, songCover, songArtist } = req.body;
@@ -119,10 +119,10 @@ exports.postSong = async (req, res, next) => {
 };
 
 exports.updateSong = async (req, res, next) => {
-  const validationErrorResult = validationResult(req);
+  const errorResult = validationResult(req);
 
-  if (!validationErrorResult.isEmpty()) {
-    return next(new HttpError('Invalid Inputs!', 422));
+  if (!errorResult.isEmpty()) {
+    return next(new HttpError(errorResult.array()[0].msg, 422));
   }
 
   const { songId } = req.params;
