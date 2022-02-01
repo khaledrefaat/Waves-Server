@@ -66,8 +66,6 @@ exports.getUserSongs = async (req, res, next) => {
 exports.postSong = async (req, res, next) => {
   const errorResult = validationResult(req);
 
-  console.log(req.body);
-
   if (!errorResult.isEmpty()) {
     return next(new HttpError(errorResult.array()[0].msg, 422));
   }
@@ -84,6 +82,8 @@ exports.postSong = async (req, res, next) => {
       new HttpError('Creating song failed, please try again later', 500)
     );
   }
+
+  console.log(user);
 
   if (!user) {
     return next(

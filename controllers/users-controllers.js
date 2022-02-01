@@ -68,23 +68,8 @@ exports.signup = async (req, res, next) => {
     username,
     email,
     password,
-    passwordConfirmation,
     image = 'uploads/images/avatar.png',
   } = req.body;
-
-  let existingUser;
-
-  try {
-    existingUser = await User.findOne({ email });
-  } catch (err) {
-    console.log(err);
-    return next(HttpError('Signup failed, please try again later', 500));
-  }
-
-  if (existingUser)
-    return next(
-      new HttpError('User already exists, please login instead', 422)
-    );
 
   const createdUser = new User({
     username,
@@ -131,12 +116,6 @@ exports.updateUser = async (req, res, next) => {
     existingUser = await User.findById(req.userData.userId);
   } catch (err) {
     console.log(err);
-    return next(
-      new HttpError('Updating user failed, please try again later.', 500)
-    );
-  }
-
-  if (!existingUser) {
     return next(
       new HttpError('Updating user failed, please try again later.', 500)
     );

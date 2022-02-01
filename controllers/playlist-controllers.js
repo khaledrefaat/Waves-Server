@@ -89,12 +89,6 @@ exports.postPlaylist = async (req, res, next) => {
     );
   }
 
-  if (!user) {
-    return next(
-      new HttpError('Creating playlist failed, please try again later.', 422)
-    );
-  }
-
   const createdPlaylist = new Playlist({
     playlistName,
     playlistCover: 'uploads/images/playlist.jpg',
@@ -143,19 +137,6 @@ exports.postSongToPlaylist = async (req, res, next) => {
     );
   }
 
-  if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
-    return next(new HttpError('Authorization failed!', 401));
-  }
-
-  if (!song || !playlist) {
-    return next(
-      new HttpError(
-        'Adding song to playlist failed, please try again later',
-        500
-      )
-    );
-  }
-
   // this is preventing to make many playlists in the same song but not making many songs in the same playlist
   try {
     playlist.songs.push({ song, playlistSong: mongoose.Types.ObjectId() });
@@ -187,12 +168,6 @@ exports.updatePlaylist = async (req, res, next) => {
     playlist = await Playlist.findById(playlistId);
   } catch (err) {
     console.log(err);
-    return next(
-      new HttpError('Updating playlist failed, please try again later', 500)
-    );
-  }
-
-  if (!playlist) {
     return next(
       new HttpError('Updating playlist failed, please try again later', 500)
     );
@@ -243,15 +218,6 @@ exports.deleteSongFromPlaylist = async (req, res, next) => {
 
   if (playlist.creator.id.toString() !== req.userData.userId.toString()) {
     return next(new HttpError('Authorization failed!', 401));
-  }
-
-  if (!song || !playlist) {
-    return next(
-      new HttpError(
-        'Deleting song from playlist failed, please try again later',
-        500
-      )
-    );
   }
 
   const playlistCurrentSongs = playlist.songs.filter(
